@@ -45,7 +45,7 @@ class Inventaris extends Model
 
     public function stokHabisPakai()
     {
-        return $this->hasMany(StokHabisPakai::class, 'id_inventaris', 'id');
+        return $this->hasMany(StokHabisPakai::class, 'inventaris_id', 'id');
     }
 
     public function room()
