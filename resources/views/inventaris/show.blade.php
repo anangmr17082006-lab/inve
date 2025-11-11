@@ -20,8 +20,6 @@
                         ID: {{ $inventaris->id }}
                     </span>
                     <span>•</span>
-                    <span>Kode: {{ $inventaris->kode_inventaris }}</span>
-                    <span>•</span>
                     <span>Terakhir update: {{ $inventaris->updated_at->format('d M Y, H:i') }}</span>
                 </div>
             </div>
@@ -126,88 +124,13 @@
                             <p class="text-lg font-semibold text-gray-900">{{ $inventaris->nama_barang }}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Kode Inventaris</label>
-                            <p class="text-lg font-mono font-semibold text-blue-600">{{ $inventaris->kode_inventaris }}</p>
-                        </div>
-                        <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Kategori</label>
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize">
                                 {{ $inventaris->kategori }}
                             </span>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Nomor Unit</label>
-                            <p class="text-lg font-semibold text-gray-900">{{ $inventaris->nomor_unit }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Ownership & Funding Card -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900 flex items-center">
-                        <div class="bg-green-100 text-green-600 p-2 rounded-lg mr-3">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/>
-                            </svg>
-                        </div>
-                        Kepemilikan & Pembiayaan
-                    </h2>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Pemilik</label>
-                            <p class="text-lg font-semibold text-gray-900">{{ $inventaris->pemilik }}</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Sumber Dana</label>
-                            <p class="text-lg font-semibold text-gray-900">{{ $inventaris->sumber_dana }}</p>
-                        </div>
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Tanggal Pembelian</label>
-                            <p class="text-lg font-semibold text-gray-900">
-                                {{ \Carbon\Carbon::parse($inventaris->tahun_beli)->format('d F Y') }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Location Information Card -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="bg-gradient-to-r from-purple-50 to-violet-50 px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900 flex items-center">
-                        <div class="bg-purple-100 text-purple-600 p-2 rounded-lg mr-3">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                        </div>
-                        Informasi Lokasi
-                    </h2>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Unit Kerja</label>
-                            <div class="flex items-center">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    {{ $inventaris->unit->nama_unit ?? 'N/A' }}
-                                </span>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Ruangan</label>
-                            <div class="flex items-center">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    {{ $inventaris->room->nama_ruangan ?? 'N/A' }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Lokasi Spesifik</label>
+                            <label class="block text-sm font-medium text-gray-500 mb-1">Lokasi</label>
                             <p class="text-lg font-semibold text-gray-900">{{ $inventaris->lokasi ?? 'Tidak ditentukan' }}</p>
                         </div>
                     </div>
@@ -263,38 +186,6 @@
                                     {{ $inventaris->kondisi_baik + $inventaris->kondisi_rusak_ringan + $inventaris->kondisi_rusak_berat }}
                                 </span>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Additional Information Card -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900 flex items-center">
-                        <div class="bg-gray-100 text-gray-600 p-2 rounded-lg mr-3">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-                            </svg>
-                        </div>
-                        Informasi Tambahan
-                    </h2>
-                </div>
-                <div class="p-6">
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Keterangan</label>
-                            <p class="text-sm text-gray-900 leading-relaxed">
-                                {{ $inventaris->keterangan ?? 'Tidak ada keterangan' }}
-                            </p>
-                        </div>
-                        <div class="pt-4 border-t border-gray-200">
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Dibuat Pada</label>
-                            <p class="text-sm text-gray-900">{{ $inventaris->created_at->format('d M Y, H:i') }}</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-500 mb-1">Diperbarui Pada</label>
-                            <p class="text-sm text-gray-900">{{ $inventaris->updated_at->format('d M Y, H:i') }}</p>
                         </div>
                     </div>
                 </div>

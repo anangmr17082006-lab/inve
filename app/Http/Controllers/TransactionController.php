@@ -99,7 +99,7 @@ class TransactionController extends Controller
     public function show(Transaction $transaction)
     {
         $this->authorize('view', $transaction); // Proteksi
-        $transaction->load('user');
+        $transaction->load(['item', 'user']);
         return view('transactions.show', compact('transaction'));
     }
 

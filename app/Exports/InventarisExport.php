@@ -18,15 +18,12 @@ class InventarisExport implements FromCollection, WithHeadings, WithMapping
     {
         return [
             'ID',
-            'Kode Inventaris',
             'Nama Barang',
             'Kategori',
-            'Pemilik',
-            'Sumber Dana',
-            'Tahun Beli',
-            'Nomor Unit',
-            'Kondisi',
-            'Lokasi',
+            'Lokasi', // Tambahkan lokasi
+            'Kondisi Baik',
+            'Kondisi Rusak Ringan',
+            'Kondisi Rusak Berat',
             'Created At',
             'Updated At',
         ];
@@ -36,15 +33,12 @@ class InventarisExport implements FromCollection, WithHeadings, WithMapping
     {
         return [
             $inventaris->id,
-            $inventaris->kode_inventaris,
             $inventaris->nama_barang,
             $inventaris->kategori,
-            $inventaris->pemilik,
-            $inventaris->sumber_dana,
-            $inventaris->tahun_beli,
-            $inventaris->nomor_unit,
-            $inventaris->kondisi,
-            $inventaris->lokasi,
+            $inventaris->lokasi, // Tambahkan lokasi
+            $inventaris->kondisi_baik,
+            $inventaris->kondisi_rusak_ringan,
+            $inventaris->kondisi_rusak_berat,
             $inventaris->created_at,
             $inventaris->updated_at,
         ];

@@ -2,7 +2,6 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Header Section -->
     <div class="mb-8">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between">
             <div class="mb-4 md:mb-0">
@@ -28,7 +27,6 @@
         </div>
     </div>
 
-    <!-- Error Message -->
     @if(session('error'))
     <div class="rounded-xl bg-red-50 border border-red-200 p-4 mb-6 animate-fade-in">
         <div class="flex items-center">
@@ -44,7 +42,6 @@
     </div>
     @endif
 
-    <!-- Success Message -->
     @if(session('success'))
     <div class="rounded-xl bg-green-50 border border-green-200 p-4 mb-6 animate-fade-in">
         <div class="flex items-center">
@@ -60,7 +57,6 @@
     </div>
     @endif
 
-    <!-- Form Section -->
     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
             <h2 class="text-lg font-semibold text-gray-900">Form Tambah Inventaris</h2>
@@ -80,7 +76,6 @@
             }" x-init="calculateTotal()">
                 @csrf
 
-                <!-- Basic Information Section -->
                 <div class="mb-8">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                         <div class="bg-blue-100 text-blue-600 p-2 rounded-lg mr-3">
@@ -92,7 +87,6 @@
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Nama Barang -->
                         <div class="md:col-span-2">
                             <label for="nama_barang" class="block text-sm font-medium text-gray-700 mb-2">
                                 Nama Barang <span class="text-red-500">*</span>
@@ -120,7 +114,6 @@
                             @enderror
                         </div>
 
-                        <!-- Kategori -->
                         <div>
                             <label for="kategori" class="block text-sm font-medium text-gray-700 mb-2">
                                 Kategori Inventaris <span class="text-red-500">*</span>
@@ -141,7 +134,42 @@
                             @enderror
                         </div>
 
-                        <!-- Initial Stock for Habis Pakai -->
+                        <div>
+                            <label for="lokasi" class="block text-sm font-medium text-gray-700 mb-2">
+                                Lokasi <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                name="lokasi" 
+                                id="lokasi" 
+                                class="block w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('lokasi') border-red-300 @enderror" 
+                                value="{{ old('lokasi') }}" 
+                                required
+                                placeholder="Contoh: Gedung A, Ruang Lab Komputer, dll."
+                            >
+                            @error('lokasi')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="kode_inventaris" class="block text-sm font-medium text-gray-700 mb-2">
+                                Kode Inventaris <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                name="kode_inventaris" 
+                                id="kode_inventaris" 
+                                class="block w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('kode_inventaris') border-red-300 @enderror" 
+                                value="{{ old('kode_inventaris') }}" 
+                                required
+                                placeholder="Contoh: INV-001, LAB-A-001, dll."
+                            >
+                            @error('kode_inventaris')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <div x-show="kategori === 'habis_pakai'" x-transition>
                             <label for="initial_stok" class="block text-sm font-medium text-gray-700 mb-2">
                                 Stok Awal <span class="text-red-500">*</span>
@@ -163,97 +191,6 @@
                     </div>
                 </div>
 
-                <!-- Ownership & Funding Section -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                        <div class="bg-green-100 text-green-600 p-2 rounded-lg mr-3">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/>
-                            </svg>
-                        </div>
-                        Kepemilikan & Pembiayaan
-                    </h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Pemilik -->
-                        <div>
-                            <label for="pemilik" class="block text-sm font-medium text-gray-700 mb-2">
-                                Pemilik <span class="text-red-500">*</span>
-                            </label>
-                            <input 
-                                type="text" 
-                                name="pemilik" 
-                                id="pemilik" 
-                                class="block w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('pemilik') border-red-300 @enderror" 
-                                value="{{ old('pemilik') }}" 
-                                required
-                                placeholder="Contoh: feb, ftk, fkip"
-                            >
-                            @error('pemilik')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Sumber Dana -->
-                        <div>
-                            <label for="sumber_dana" class="block text-sm font-medium text-gray-700 mb-2">
-                                Sumber Dana <span class="text-red-500">*</span>
-                            </label>
-                            <input 
-                                type="text" 
-                                name="sumber_dana" 
-                                id="sumber_dana" 
-                                class="block w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('sumber_dana') border-red-300 @enderror" 
-                                value="{{ old('sumber_dana') }}" 
-                                required
-                                placeholder="Contoh: pp-pts, dana-dikti, boptn"
-                            >
-                            @error('sumber_dana')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Tahun Beli -->
-                        <div>
-                            <label for="tahun_beli" class="block text-sm font-medium text-gray-700 mb-2">
-                                Tanggal Pembelian <span class="text-red-500">*</span>
-                            </label>
-                            <input 
-                                type="date" 
-                                name="tahun_beli" 
-                                id="tahun_beli" 
-                                class="block w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('tahun_beli') border-red-300 @enderror" 
-                                value="{{ old('tahun_beli', date('Y-m-d')) }}" 
-                                required
-                            >
-                            @error('tahun_beli')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Nomor Unit -->
-                        <div>
-                            <label for="nomor_unit" class="block text-sm font-medium text-gray-700 mb-2">
-                                Nomor Unit <span class="text-red-500">*</span>
-                            </label>
-                            <input 
-                                type="number" 
-                                name="nomor_unit" 
-                                id="nomor_unit" 
-                                class="block w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('nomor_unit') border-red-300 @enderror" 
-                                value="{{ old('nomor_unit') }}" 
-                                required 
-                                min="1"
-                                placeholder="Contoh: 1, 2, 3"
-                            >
-                            @error('nomor_unit')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Condition & Location Section -->
                 <div class="mb-8">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                         <div class="bg-purple-100 text-purple-600 p-2 rounded-lg mr-3">
@@ -261,14 +198,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                             </svg>
                         </div>
-                        Kondisi & Lokasi
+                        Kondisi
                         <span class="ml-auto text-sm font-normal text-gray-500">
                             Total: <span class="font-semibold" x-text="totalStok"></span> unit
                         </span>
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <!-- Kondisi Baik -->
                         <div class="bg-green-50 border border-green-200 rounded-lg p-4">
                             <label for="kondisi_baik" class="block text-sm font-medium text-green-800 mb-2 flex items-center">
                                 <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
@@ -286,7 +222,6 @@
                             >
                         </div>
 
-                        <!-- Rusak Ringan -->
                         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                             <label for="kondisi_rusak_ringan" class="block text-sm font-medium text-yellow-800 mb-2 flex items-center">
                                 <span class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
@@ -304,7 +239,6 @@
                             >
                         </div>
 
-                        <!-- Rusak Berat -->
                         <div class="bg-red-50 border border-red-200 rounded-lg p-4">
                             <label for="kondisi_rusak_berat" class="block text-sm font-medium text-red-800 mb-2 flex items-center">
                                 <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
@@ -322,96 +256,8 @@
                             >
                         </div>
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Unit -->
-                        <div>
-                            <label for="unit_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                Unit Kerja <span class="text-red-500">*</span>
-                            </label>
-                            <select 
-                                name="unit_id" 
-                                id="unit_id" 
-                                class="block w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('unit_id') border-red-300 @enderror" 
-                                required
-                            >
-                                <option value="">Pilih Unit Kerja</option>
-                                @foreach($units as $unit)
-                                    <option value="{{ $unit->id }}" {{ old('unit_id') == $unit->id ? 'selected' : '' }}>
-                                        {{ $unit->nama_unit }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('unit_id')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Ruangan -->
-                        <div>
-                            <label for="room_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                Ruangan <span class="text-red-500">*</span>
-                            </label>
-                            <select 
-                                name="room_id" 
-                                id="room_id" 
-                                class="block w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('room_id') border-red-300 @enderror" 
-                                required
-                            >
-                                <option value="">Pilih Ruangan</option>
-                                @foreach($rooms as $room)
-                                    <option value="{{ $room->id }}" {{ old('room_id') == $room->id ? 'selected' : '' }}>
-                                        {{ $room->nama_ruangan }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('room_id')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Lokasi -->
-                        <div class="md:col-span-2">
-                            <label for="lokasi" class="block text-sm font-medium text-gray-700 mb-2">Lokasi Spesifik (Opsional)</label>
-                            <input 
-                                type="text" 
-                                name="lokasi" 
-                                id="lokasi" 
-                                class="block w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('lokasi') border-red-300 @enderror" 
-                                value="{{ old('lokasi') }}" 
-                                placeholder="Contoh: Rak Buku No. 3, Lemari Arsip, dll."
-                            >
-                            @error('lokasi')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
                 </div>
 
-                <!-- Additional Information -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                        <div class="bg-gray-100 text-gray-600 p-2 rounded-lg mr-3">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-                            </svg>
-                        </div>
-                        Informasi Tambahan
-                    </h3>
-                    
-                    <div>
-                        <label for="keterangan" class="block text-sm font-medium text-gray-700 mb-2">Keterangan (Opsional)</label>
-                        <textarea 
-                            name="keterangan" 
-                            id="keterangan" 
-                            rows="4" 
-                            class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
-                            placeholder="Tambahkan catatan atau keterangan khusus tentang barang ini..."
-                        >{{ old('keterangan') }}</textarea>
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
                 <div class="flex flex-col-reverse md:flex-row gap-3 md:justify-end pt-6 border-t border-gray-200">
                     <a href="{{ route('inventaris.index') }}" class="inline-flex justify-center items-center gap-2 rounded-lg bg-gray-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 transition-colors duration-200">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -35,26 +35,24 @@
     <table>
         <thead>
             <tr>
-                <th>Kode Inventaris</th>
                 <th>Nama Barang</th>
                 <th>Kategori</th>
-                <th>Kondisi</th>
                 <th>Lokasi</th>
-                <th>Pemilik</th>
-                <th>Tahun Beli</th>
+                <th>Kondisi Baik</th>
+                <th>Kondisi Rusak Ringan</th>
+                <th>Kondisi Rusak Berat</th>
                 <th>Stok (HP)</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($inventaris as $item)
                 <tr>
-                    <td>{{ $item->kode_inventaris }}</td>
                     <td>{{ $item->nama_barang }}</td>
                     <td>{{ $item->kategori ?? 'N/A' }}</td>
-                    <td>{{ $item->kondisi ?? 'N/A' }}</td>
                     <td>{{ $item->lokasi ?? 'N/A' }}</td>
-                    <td>{{ $item->pemilik ?? 'N/A' }}</td>
-                    <td>{{ $item->tahun_beli ?? 'N/A' }}</td>
+                    <td>{{ $item->kondisi_baik }}</td>
+                    <td>{{ $item->kondisi_rusak_ringan }}</td>
+                    <td>{{ $item->kondisi_rusak_berat }}</td>
                     <td>
                         @if ($item->kategori === 'habis_pakai')
                             {{ $item->stokHabisPakai->sum('jumlah_masuk') - $item->stokHabisPakai->sum('jumlah_keluar') }}

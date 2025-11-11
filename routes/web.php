@@ -38,6 +38,13 @@ Route::middleware("auth")->group(function () {
     Route::resource("transactions",TransactionController::class)->except(["edit","update"]);
     Route::resource("requests",RequestController::class);
 
+    // Settings Route
+    Route::get("/settings",[DashboardController::class,"settingsIndex"])->name("settings.index");
+
+    // Profile Routes
+    Route::get("/profile",[UserController::class,"edit"])->name("profile.edit");
+    Route::patch("/profile",[UserController::class,"update"])->name("profile.update");
+
     // Report Routes
     Route::get("reports/transactions",[ReportController::class,"transactionReport"])->name("reports.transactions");
     Route::get("reports/item-history",[ReportController::class,"itemHistoryReport"])->name("reports.item_history");

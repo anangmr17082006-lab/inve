@@ -1,167 +1,58 @@
-@extends('dashboard')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Edit Profile') }}
+        </h2>
+    </x-slot>
 
-@section('content')
-<div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <!-- Header Section -->
-    <div class="mb-10 text-center">
-        <h1 class="text-4xl font-bold text-gray-900 mb-3">Edit User</h1>
-        <div class="w-24 h-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mx-auto"></div>
-        <p class="text-gray-600 mt-2">Update user information for <span class="font-semibold text-blue-600">{{ $user->name ?? 'N/A' }}</span></p>
-    </div>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    <form method="POST" action="{{ route('profile.update') }}">
+                        @csrf
+                        @method('patch')
 
-    <!-- Edit Form Card -->
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
-        <!-- Form Header -->
-        <div class="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4 text-white">
-            <div class="flex items-center">
-                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
-                <h2 class="text-xl font-semibold">User Information</h2>
+                        <div>
+                            <label for="name" class="block font-medium text-sm text-gray-700">Name</label>
+                            <input id="name" class="block mt-1 w-full" type="text" name="name" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name" />
+                            @error('name')
+                                <p class="text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="email" class="block font-medium text-sm text-gray-700">Email</label>
+                            <input id="email" class="block mt-1 w-full" type="email" name="email" value="{{ old('email', $user->email) }}" required autocomplete="username" />
+                            @error('email')
+                                <p class="text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="password" class="block font-medium text-sm text-gray-700">New Password</label>
+                            <input id="password" class="block mt-1 w-full" type="password" name="password" autocomplete="new-password" />
+                            @error('password')
+                                <p class="text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="password_confirmation" class="block font-medium text-sm text-gray-700">Confirm Password</label>
+                            <input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" autocomplete="new-password" />
+                            @error('password_confirmation')
+                                <p class="text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="flex items-center justify-end mt-4">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-
-        <!-- Form Content -->
-        <div class="px-6 py-8">
-            <form action="{{ route('users.update', $user->id) }}" method="POST" class="space-y-6">
-                @csrf
-                @method('PUT')
-
-                <!-- Name Field -->
-                <div class="space-y-2">
-                    <label for="name" class="block text-sm font-medium text-gray-700 flex items-center">
-                        <svg class="w-4 h-4 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                        </svg>
-                        Full Name
-                        <span class="text-red-500 ml-1">*</span>
-                    </label>
-                    <div class="relative">
-                        <input type="text" name="name" id="name" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('name') border-red-500 @enderror" 
-                               value="{{ old('name', $user->name) }}" 
-                               placeholder="Enter full name" 
-                               required>
-                        @error('name')
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                        @enderror
-                    </div>
-                    @error('name')
-                        <p class="text-red-500 text-sm flex items-center mt-1">
-                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                            </svg>
-                            {{ $message }}
-                        </p>
-                    @enderror
-                </div>
-
-                <!-- Email Field -->
-                <div class="space-y-2">
-                    <label for="email" class="block text-sm font-medium text-gray-700 flex items-center">
-                        <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                        </svg>
-                        Email Address
-                        <span class="text-red-500 ml-1">*</span>
-                    </label>
-                    <div class="relative">
-                        <input type="email" name="email" id="email" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('email') border-red-500 @enderror" 
-                               value="{{ old('email', $user->email) }}" 
-                               placeholder="Enter email address" 
-                               required>
-                        @error('email')
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                        @enderror
-                    </div>
-                    @error('email')
-                        <p class="text-red-500 text-sm flex items-center mt-1">
-                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                            </svg>
-                            {{ $message }}
-                        </p>
-                    @enderror
-                </div>
-
-                <!-- Password Field -->
-                <div class="space-y-2">
-                    <label for="password" class="block text-sm font-medium text-gray-700 flex items-center">
-                        <svg class="w-4 h-4 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                        </svg>
-                        New Password (Optional)
-                    </label>
-                    <div class="relative">
-                        <input type="password" name="password" id="password" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('password') border-red-500 @enderror" 
-                               placeholder="Enter new password">
-                        @error('password')
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                        @enderror
-                    </div>
-                    @error('password')
-                        <p class="text-red-500 text-sm flex items-center mt-1">
-                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                            </svg>
-                            {{ $message }}
-                        </p>
-                    @enderror
-                    <p class="text-gray-500 text-xs mt-1">Leave blank to keep current password</p>
-                </div>
-
-                <!-- Confirm Password Field -->
-                <div class="space-y-2">
-                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700 flex items-center">
-                        <svg class="w-4 h-4 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                        Confirm New Password
-                    </label>
-                    <input type="password" name="password_confirmation" id="password_confirmation" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" 
-                           placeholder="Confirm new password">
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row justify-between items-center pt-6 space-y-4 sm:space-y-0">
-                    <div class="flex space-x-3">
-                        <button type="submit" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg shadow-md transition duration-200 transform hover:-translate-y-0.5">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Update User
-                        </button>
-                        <a href="{{ route('users.index') }}" class="inline-flex items-center px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition duration-200">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                            Cancel
-                        </a>
-                    </div>
-                    
-                    <!-- Additional Info -->
-                    <div class="text-sm text-gray-500 text-center sm:text-right">
-                        <p>Last updated: {{ $user->updated_at ? $user->updated_at->format('M j, Y g:i A') : 'N/A' }}</p>
-                    </div>
-                </div>
-            </form>
-        </div>
     </div>
-</div>
-@endsection
+</x-app-layout>

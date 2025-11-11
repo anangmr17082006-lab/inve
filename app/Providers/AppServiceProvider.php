@@ -44,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
         Blade::component('dropdown-link', 'components.dropdown-link');
         Blade::component('responsive-nav-link', 'components.responsive-nav-link');
 
-        Inventaris::observe(InventarisObserver::class);
+        // Inventaris::observe(InventarisObserver::class); // Hapus atau komentari baris ini
         Gate::policy(Inventaris::class, InventarisPolicy::class); // Daftarkan policy
         Gate::policy(Room::class, RoomPolicy::class);
         Gate::policy(Unit::class, UnitPolicy::class);

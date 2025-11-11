@@ -143,34 +143,6 @@
                             @enderror
                         </div>
 
-                        <!-- Kode Inventaris -->
-                        <div>
-                            <label for="kode_inventaris" class="block text-sm font-medium text-gray-700 mb-2">
-                                Kode Inventaris <span class="text-red-500">*</span>
-                            </label>
-                            <div class="relative">
-                                <input 
-                                    type="text" 
-                                    name="kode_inventaris" 
-                                    id="kode_inventaris" 
-                                    class="block w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('kode_inventaris') border-red-300 @enderror" 
-                                    value="{{ old('kode_inventaris', $inventaris->kode_inventaris) }}" 
-                                    required
-                                    placeholder="Kode unik barang"
-                                >
-                                @error('kode_inventaris')
-                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                        <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </div>
-                                @enderror
-                            </div>
-                            @error('kode_inventaris')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
                         <!-- Kategori -->
                         <div>
                             <label for="kategori" class="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
@@ -180,63 +152,48 @@
                                 x-model="kategori"
                                 class="block w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
                             >
-                                <option value="">Pilih Kategori</option>
-                                <option value="Elektronik" {{ old('kategori', $inventaris->kategori) == 'Elektronik' ? 'selected' : '' }}>Elektronik</option>
-                                <option value="Furniture" {{ old('kategori', $inventaris->kategori) == 'Furniture' ? 'selected' : '' }}>Furniture</option>
-                                <option value="Alat Tulis" {{ old('kategori', $inventaris->kategori) == 'Alat Tulis' ? 'selected' : '' }}>Alat Tulis</option>
-                                <option value="Kendaraan" {{ old('kategori', $inventaris->kategori) == 'Kendaraan' ? 'selected' : '' }}>Kendaraan</option>
-                                <option value="Laboratorium" {{ old('kategori', $inventaris->kategori) == 'Laboratorium' ? 'selected' : '' }}>Laboratorium</option>
-                                <option value="Lainnya" {{ old('kategori', $inventaris->kategori) == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Location Information -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                        <div class="bg-green-100 text-green-600 p-2 rounded-lg mr-3">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                        </div>
-                        Informasi Lokasi
-                    </h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Unit -->
-                        <div>
-                            <label for="unit_id" class="block text-sm font-medium text-gray-700 mb-2">Unit Kerja</label>
-                            <select 
-                                name="unit_id" 
-                                id="unit_id" 
-                                class="block w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
-                            >
-                                <option value="">Pilih Unit</option>
-                                @foreach($units as $unit)
-                                    <option value="{{ $unit->id }}" {{ old('unit_id', $inventaris->unit_id) == $unit->id ? 'selected' : '' }}>
-                                        {{ $unit->nama_unit }}
-                                    </option>
-                                @endforeach
+                                <option value="tidak_habis_pakai" {{ old('kategori', $inventaris->kategori) == 'tidak_habis_pakai' ? 'selected' : '' }}>Barang Tidak Habis Pakai</option>
+                                <option value="habis_pakai" {{ old('kategori', $inventaris->kategori) == 'habis_pakai' ? 'selected' : '' }}>Barang Habis Pakai</option>
+                                <option value="aset_tetap" {{ old('kategori', $inventaris->kategori) == 'aset_tetap' ? 'selected' : '' }}>Aset Tetap</option>
                             </select>
                         </div>
 
-                        <!-- Ruangan -->
+                        <!-- Lokasi -->
                         <div>
-                            <label for="room_id" class="block text-sm font-medium text-gray-700 mb-2">Ruangan</label>
-                            <select 
-                                name="room_id" 
-                                id="room_id" 
-                                class="block w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                            <label for="lokasi" class="block text-sm font-medium text-gray-700 mb-2">
+                                Lokasi <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                name="lokasi" 
+                                id="lokasi" 
+                                class="block w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('lokasi') border-red-300 @enderror" 
+                                value="{{ old('lokasi', $inventaris->lokasi) }}" 
+                                required
+                                placeholder="Contoh: Gedung A, Ruang Lab Komputer, dll."
                             >
-                                <option value="">Pilih Ruangan</option>
-                                @foreach($rooms as $room)
-                                    <option value="{{ $room->id }}" {{ old('room_id', $inventaris->room_id) == $room->id ? 'selected' : '' }}>
-                                        {{ $room->nama_ruangan }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            @error('lokasi')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Kode Inventaris -->
+                        <div>
+                            <label for="kode_inventaris" class="block text-sm font-medium text-gray-700 mb-2">
+                                Kode Inventaris <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                name="kode_inventaris" 
+                                id="kode_inventaris" 
+                                class="block w-full pl-4 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('kode_inventaris') border-red-300 @enderror" 
+                                value="{{ old('kode_inventaris', $inventaris->kode_inventaris) }}" 
+                                required
+                                placeholder="Contoh: INV-001, LAB-A-001, dll."
+                            >
+                            @error('kode_inventaris')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                 </div>

@@ -1,113 +1,318 @@
 @extends('dashboard')
 
 @section('content')
-    <div class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
-        <!-- Header -->
-        <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">
-                <span class="inline-flex items-center">
-                    <svg class="w-8 h-8 mr-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                    </svg>
-                    {{ $room->nama_ruangan }}
-                </span>
-            </h1>
-            <a href="{{ route('rooms.index') }}" class="mt-3 sm:mt-0 inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 transition">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                Kembali
-            </a>
-        </div>
-
-        <!-- Card Utama -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-            <div class="bg-gradient-to-r from-indigo-500 to-purple-600 h-2"></div>
-            
-            <div class="p-6 sm:p-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Kolom Kiri -->
-                    <div class="space-y-5">
-                        <div>
-                            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Nama Ruangan</p>
-                            <p class="mt-1 text-xl font-bold text-gray-900">{{ $room->nama_ruangan }}</p>
-                        </div>
-
-                        <div>
-                            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Lokasi</p>
-                            <p class="mt-1 text-lg text-gray-800 flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                                {{ $room->lokasi ?? 'Tidak tersedia' }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Unit</p>
-                            <p class="mt-1 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2"></path>
-                                </svg>
-                                {{ $room->unit->nama_unit ?? 'Tidak terdaftar' }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Kolom Kanan -->
-                    <div class="space-y-5">
-                        <div>
-                            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Dibuat Pada</p>
-                            <p class="mt-1 text-gray-800 flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                {{ $room->created_at->format('d M Y, H:i') }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Terakhir Diperbarui</p>
-                            <p class="mt-1 text-gray-800 flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                {{ $room->updated_at->diffForHumans() }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col sm:flex-row gap-3 justify-end">
-                    <a href="{{ route('rooms.edit', $room->id) }}"
-                       class="inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition transform hover:-translate-y-0.5 shadow-md">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                        </svg>
-                        Edit Ruangan
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex items-center mb-4 sm:mb-0">
+                    <a href="{{ route('rooms.index') }}" 
+                       class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 transition duration-150 ease-in-out mr-4">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Kembali ke Daftar Ruangan
                     </a>
-
+                    <div class="border-l border-gray-300 h-6 mx-3"></div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
+                        Detail Ruangan
+                    </h1>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <a href="{{ route('rooms.edit', $room->id) }}"
+                       class="inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-600 focus:bg-yellow-600 active:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
+                        <i class="fas fa-edit mr-2"></i>
+                        Edit
+                    </a>
+                    
                     <form action="{{ route('rooms.destroy', $room->id) }}" method="POST" class="inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit"
-                                onclick="return confirm('Yakin hapus ruangan ini? Data akan hilang permanen.')"
-                                class="inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition transform hover:-translate-y-0.5 shadow-md">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                            Hapus Ruangan
+                                onclick="return confirm('Apakah Anda yakin ingin menghapus ruangan ini? Tindakan ini tidak dapat dibatalkan.')"
+                                class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
+                            <i class="fas fa-trash mr-2"></i>
+                            Hapus
                         </button>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- Optional: Mini Stats atau Info Tambahan (bisa dikembangin nanti) -->
-        <div class="mt-6 text-center text-xs text-gray-400">
-            ID Ruangan: #{{ $room->id }} | Sistem Manajemen Ruangan v1.0
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column - Room Information -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+                    <!-- Header Card -->
+                    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-8">
+                        <div class="flex items-center">
+                            <div class="bg-white bg-opacity-20 p-3 rounded-lg mr-4">
+                                <i class="fas fa-door-open text-white text-2xl"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl md:text-3xl font-bold text-white mb-1">
+                                    {{ $room->nama_ruangan }}
+                                </h2>
+                                <p class="text-blue-100 flex items-center">
+                                    <i class="fas fa-map-marker-alt mr-2"></i>
+                                    {{ $room->lokasi ?? 'Lokasi belum ditentukan' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Information Grid -->
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Basic Information -->
+                            <div class="space-y-6">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
+                                        <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                                        Informasi Dasar
+                                    </h3>
+                                    
+                                    <div class="space-y-4">
+                                        <div class="flex items-start">
+                                            <div class="bg-blue-50 p-2 rounded-lg mr-3">
+                                                <i class="fas fa-door-open text-blue-600 text-sm"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-500">Nama Ruangan</p>
+                                                <p class="text-lg font-semibold text-gray-900">{{ $room->nama_ruangan }}</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-start">
+                                            <div class="bg-green-50 p-2 rounded-lg mr-3">
+                                                <i class="fas fa-map-marker-alt text-green-600 text-sm"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-500">Lokasi</p>
+                                                <p class="text-lg font-semibold text-gray-900">
+                                                    {{ $room->lokasi ?? 'Tidak tersedia' }}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-start">
+                                            <div class="bg-purple-50 p-2 rounded-lg mr-3">
+                                                <i class="fas fa-building text-purple-600 text-sm"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-500">Unit</p>
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 mt-1">
+                                                    <i class="fas fa-hashtag mr-1 text-xs"></i>
+                                                    {{ $room->unit->nama_unit ?? 'Tidak terdaftar' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Timestamps -->
+                            <div class="space-y-6">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
+                                        <i class="fas fa-history text-gray-500 mr-2"></i>
+                                        Informasi Sistem
+                                    </h3>
+                                    
+                                    <div class="space-y-4">
+                                        <div class="flex items-start">
+                                            <div class="bg-green-50 p-2 rounded-lg mr-3">
+                                                <i class="fas fa-calendar-plus text-green-600 text-sm"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-500">Dibuat Pada</p>
+                                                <p class="text-base font-semibold text-gray-900">
+                                                    {{ $room->created_at->format('d F Y') }}
+                                                </p>
+                                                <p class="text-sm text-gray-500">
+                                                    {{ $room->created_at->format('H:i:s') }} WIB
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-start">
+                                            <div class="bg-amber-50 p-2 rounded-lg mr-3">
+                                                <i class="fas fa-calendar-check text-amber-600 text-sm"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-500">Terakhir Diperbarui</p>
+                                                <p class="text-base font-semibold text-gray-900">
+                                                    {{ $room->updated_at->diffForHumans() }}
+                                                </p>
+                                                <p class="text-sm text-gray-500">
+                                                    {{ $room->updated_at->format('d F Y, H:i:s') }} WIB
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-start">
+                                            <div class="bg-gray-50 p-2 rounded-lg mr-3">
+                                                <i class="fas fa-fingerprint text-gray-600 text-sm"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-500">ID Ruangan</p>
+                                                <p class="text-base font-semibold text-gray-900">
+                                                    #{{ str_pad($room->id, 6, '0', STR_PAD_LEFT) }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Information Section (bisa ditambahkan nanti) -->
+                <div class="mt-6 bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-ellipsis-h text-blue-500 mr-2"></i>
+                        Informasi Tambahan
+                    </h3>
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-info-circle text-3xl mb-3 text-gray-300"></i>
+                        <p>Tidak ada informasi tambahan untuk ruangan ini.</p>
+                        <p class="text-sm mt-2">Fitur ini dapat dikembangkan sesuai kebutuhan.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Quick Actions & Stats -->
+            <div class="space-y-6">
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-bolt text-yellow-500 mr-2"></i>
+                        Tindakan Cepat
+                    </h3>
+                    <div class="space-y-3">
+                        <a href="{{ route('rooms.edit', $room->id) }}"
+                           class="w-full flex items-center justify-center px-4 py-3 border border-yellow-300 rounded-lg text-yellow-700 bg-yellow-50 hover:bg-yellow-100 transition duration-150 ease-in-out font-medium">
+                            <i class="fas fa-edit mr-2"></i>
+                            Edit Ruangan
+                        </a>
+                        
+                        <a href="#"
+                           class="w-full flex items-center justify-center px-4 py-3 border border-blue-300 rounded-lg text-blue-700 bg-blue-50 hover:bg-blue-100 transition duration-150 ease-in-out font-medium">
+                            <i class="fas fa-calendar-alt mr-2"></i>
+                            Jadwalkan Penggunaan
+                        </a>
+                        
+                        <a href="#"
+                           class="w-full flex items-center justify-center px-4 py-3 border border-green-300 rounded-lg text-green-700 bg-green-50 hover:bg-green-100 transition duration-150 ease-in-out font-medium">
+                            <i class="fas fa-print mr-2"></i>
+                            Cetak Informasi
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Room Status -->
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-chart-bar text-green-500 mr-2"></i>
+                        Status Ruangan
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Status</span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-circle text-xs mr-1"></i>
+                                Tersedia
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Kapasitas</span>
+                            <span class="font-semibold text-gray-900">-</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Fasilitas</span>
+                            <span class="font-semibold text-gray-900">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Info -->
+                <div class="bg-gradient-to-r from-gray-800 to-gray-900 rounded-xl shadow-lg p-6 text-white">
+                    <h3 class="text-lg font-semibold mb-4">
+                        <i class="fas fa-database mr-2"></i>
+                        Informasi Sistem
+                    </h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-300">ID Sistem</span>
+                            <span class="font-mono">#{{ $room->id }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-300">Versi</span>
+                            <span>v1.0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-300">Terakhir Akses</span>
+                            <span>Sekarang</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-700 text-xs text-gray-400 text-center">
+                        Sistem Manajemen Ruangan
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="mt-8 text-center">
+            <p class="text-sm text-gray-500">
+                Halaman detail ruangan • 
+                <span class="font-mono">ID: #{{ str_pad($room->id, 6, '0', STR_PAD_LEFT) }}</span> • 
+                {{ now()->format('d M Y, H:i') }}
+            </p>
         </div>
     </div>
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .bg-gradient-br {
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    }
+    
+    .shadow-custom {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    .hover-lift {
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-2px);
+    }
+</style>
+
+<script>
+    // Tambahkan efek interaktif sederhana
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tambahkan kelas hover untuk card
+        const cards = document.querySelectorAll('.bg-white');
+        cards.forEach(card => {
+            card.classList.add('hover-lift');
+        });
+        
+        // Animasi untuk tombol hapus
+        const deleteButton = document.querySelector('button[type="submit"]');
+        if (deleteButton) {
+            deleteButton.addEventListener('mouseover', function() {
+                this.classList.add('shadow-lg');
+            });
+            deleteButton.addEventListener('mouseout', function() {
+                this.classList.remove('shadow-lg');
+            });
+        }
+    });
+</script>
 @endsection

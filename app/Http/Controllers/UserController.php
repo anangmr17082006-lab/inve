@@ -68,8 +68,9 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(User $user)
+    public function edit()
     {
+        $user = auth()->user(); // Get the authenticated user
         $this->authorize('update', $user); // Proteksi
         return view('users.edit', compact('user'));
     }
@@ -77,8 +78,9 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request)
     {
+        $user = auth()->user(); // Get the authenticated user
         $this->authorize('update', $user); // Proteksi
         $validatedData = $request->validate([
             'name' => 'required|max:255',
@@ -94,7 +96,7 @@ class UserController extends Controller
 
         $user->update($validatedData);
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully!');
+        return redirect()->route('profile.edit')->with('success', 'Profile updated successfully!');
     }
 
     /**

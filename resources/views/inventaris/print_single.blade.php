@@ -29,18 +29,12 @@
     <h1>Detail Inventaris: {{ $inventaris->nama_barang }}</h1>
 
     <div class="item-details">
-        <p><strong>Kode Inventaris:</strong> {{ $inventaris->kode_inventaris }}</p>
         <p><strong>Nama Barang:</strong> {{ $inventaris->nama_barang }}</p>
-        <p><strong>Jenis Barang:</strong> {{ $inventaris->kategori ?? 'N/A' }}</p>
         <p><strong>Kategori Inventaris:</strong> {{ $inventaris->kategori }}</p>
-        <p><strong>Pemilik:</strong> {{ $inventaris->pemilik }}</p>
-        <p><strong>Sumber Dana:</strong> {{ $inventaris->sumber_dana }}</p>
-        <p><strong>Tahun Beli:</strong> {{ $inventaris->tahun_beli }}</p>
-        <p><strong>Nomor Unit:</strong> {{ $inventaris->nomor_unit }}</p>
-        <p><strong>Kondisi:</strong> {{ $inventaris->kondisi ?? 'N/A' }}</p>
         <p><strong>Lokasi:</strong> {{ $inventaris->lokasi ?? 'N/A' }}</p>
-        <p><strong>Ruangan:</strong> {{ $inventaris->room->nama_ruangan ?? 'N/A' }}</p>
-        <p><strong>Unit Kerja/Fakultas:</strong> {{ $inventaris->unit->nama_unit ?? 'N/A' }}</p>
+        <p><strong>Kondisi Baik:</strong> {{ $inventaris->kondisi_baik }}</p>
+        <p><strong>Kondisi Rusak Ringan:</strong> {{ $inventaris->kondisi_rusak_ringan }}</p>
+        <p><strong>Kondisi Rusak Berat:</strong> {{ $inventaris->kondisi_rusak_berat }}</p>
         @if ($inventaris->kategori === 'habis_pakai')
             <p><strong>Stok Saat Ini:</strong> {{ $inventaris->stokHabisPakai->sum('jumlah_masuk') - $inventaris->stokHabisPakai->sum('jumlah_keluar') }}</p>
         @endif

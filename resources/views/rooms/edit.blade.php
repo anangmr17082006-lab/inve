@@ -1,136 +1,239 @@
-@extends('dashboard')
+@extends('dashboard') <!-- Pastikan dashboard.blade.php punya <html>, <body>, dan @yield('content') -->
 
 @section('content')
-    <div class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
-        <!-- Header -->
-        <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight flex items-center">
-                <svg class="w-8 h-8 mr-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-                Edit Ruangan: <span class="ml-2 text-indigo-600">{{ $room->nama_ruangan }}</span>
-            </h1>
-            <a href="{{ route('rooms.show', $room->id) }}" class="mt-3 sm:mt-0 inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                </svg>
-                Lihat Detail
-            </a>
-        </div>
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Ruangan - {{ $room->nama_ruangan }}</title>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body class="h-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
 
-        <!-- Form Card -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-            <div class="bg-gradient-to-r from-indigo-500 to-purple-600 h-2"></div>
-            
-            <div class="p-6 sm:p-8">
-                <form action="{{ route('rooms.update', $room->id) }}" method="POST" class="space-y-6">
-                    @csrf
-                    @method('PUT')
-
-                    <!-- Nama Ruangan -->
-                    <div>
-                        <label for="nama_ruangan" class="block text-sm font-semibold text-gray-700 mb-2">
-                            <span class="flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                </svg>
-                                Nama Ruangan <span class="text-red-500 ml-1">*</span>
-                            </span>
-                        </label>
-                        <input 
-                            type="text" 
-                            name="nama_ruangan" 
-                            id="nama_ruangan" 
-                            value="{{ old('nama_ruangan', $room->nama_ruangan) }}" 
-                            required
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 @error('nama_ruangan') border-red-500 @enderror"
-                            placeholder="Contoh: Ruang Rapat Lantai 3"
-                        >
-                        @error('nama_ruangan')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Lokasi -->
-                    <div>
-                        <label for="lokasi" class="block text-sm font-semibold text-gray-700 mb-2">
-                            <span class="flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                                Lokasi (Opsional)
-                            </span>
-                        </label>
-                        <input 
-                            type="text" 
-                            name="lokasi" 
-                            id="lokasi" 
-                            value="{{ old('lokasi', $room->lokasi) }}" 
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 @error('lokasi') border-red-500 @enderror"
-                            placeholder="Contoh: Gedung A, Lantai 2, Sayap Barat"
-                        >
-                        @error('lokasi')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Unit -->
-                    <div>
-                        <label for="unit_id" class="block text-sm font-semibold text-gray-700 mb-2">
-                            <span class="flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2"></path>
-                                </svg>
-                                Unit Kerja / Fakultas <span class="text-red-500 ml-1">*</span>
-                            </span>
-                        </label>
-                        <select 
-                            name="unit_id" 
-                            id="unit_id" 
-                            required
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4 @error('unit_id') border-red-500 @enderror"
-                        >
-                            <option value="">-- Pilih Unit --</option>
-                            @foreach ($units as $unit)
-                                <option value="{{ $unit->id }}" {{ old('unit_id', $room->unit_id) == $unit->id ? 'selected' : '' }}>
-                                    {{ $unit->nama_unit }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('unit_id')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="pt-6 border-t border-gray-200 flex flex-col sm:flex-row gap-3 justify-end">
-                        <button 
-                            type="submit"
-                            class="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition transform hover:-translate-y-0.5 shadow-md"
-                        >
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Simpan Perubahan
-                        </button>
-
-                        <a href="{{ route('rooms.show', $room->id) }}" 
-                           class="inline-flex items-center justify-center px-6 py-2.5 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                            Batal
-                        </a>
-                    </div>
-                </form>
+<div class="min-h-screen flex flex-col">
+    <!-- Full Page Header -->
+    <header class="bg-white/80 backdrop-blur-md shadow-lg border-b border-gray-200 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <a href="{{ route('rooms.show', $room->id) }}" 
+                   class="inline-flex items-center text-gray-600 hover:text-indigo-600 transition">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    <span class="font-medium">Kembali</span>
+                </a>
+                <div class="h-8 w-px bg-gray-300"></div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-edit text-indigo-600 mr-2"></i>
+                        Edit Ruangan
+                    </h1>
+                    <p class="text-sm text-gray-600 flex items-center">
+                        <i class="fas fa-door-open text-indigo-500 mr-1"></i>
+                        {{ $room->nama_ruangan }}
+                    </p>
+                </div>
+            </div>
+            <div class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-mono font-bold">
+                #{{ str_pad($room->id, 6, '0', STR_PAD_LEFT) }}
             </div>
         </div>
+    </header>
 
-        <!-- Footer Info -->
-        <div class="mt-6 text-center text-xs text-gray-400">
-            ID Ruangan: #{{ $room->id }} | Terakhir diubah: {{ $room->updated_at->diffForHumans() }}
+    <!-- Full Page Form Container -->
+    <main class="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div class="w-full max-w-4xl mx-auto">
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
+                <!-- Gradient Header -->
+                <div class="bg-gradient-to-r from-indigo-600 via-blue-600 to-purple-700 px-8 py-6">
+                    <div class="flex items-center text-white">
+                        <div class="bg-white/20 p-4 rounded-2xl mr-5">
+                            <i class="fas fa-edit text-3xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold">Form Edit Ruangan</h2>
+                            <p class="text-indigo-100">Perbarui detail ruangan dengan akurat</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Body -->
+                <div class="p-8 lg:p-10">
+                    <form action="{{ route('rooms.update', $room->id) }}" method="POST" class="space-y-8">
+                        @csrf
+                        @method('PUT')
+
+                        <!-- Nama Ruangan -->
+                        <div class="group">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-door-open text-indigo-600 mr-2"></i>
+                                Nama Ruangan <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <input 
+                                    type="text" 
+                                    name="nama_ruangan" 
+                                    id="nama_ruangan"
+                                    value="{{ old('nama_ruangan', $room->nama_ruangan) }}" 
+                                    required
+                                    class="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 @error('nama_ruangan') border-red-500 @enderror"
+                                    placeholder="Ruang Sidang Utama"
+                                    x-ref="nama"
+                                >
+                            </div>
+                            @error('nama_ruangan')
+                                <p class="mt-2 text-sm text-red-600 flex items-center">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i> {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <!-- Lokasi -->
+                        <div class="group">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-map-marker-alt text-green-600 mr-2"></i>
+                                Lokasi <span class="text-gray-400 text-xs">(Opsional)</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fas fa-location-arrow"></i>
+                                </div>
+                                <input 
+                                    type="text" 
+                                    name="lokasi" 
+                                    value="{{ old('lokasi', $room->lokasi) }}" 
+                                    class="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all @error('lokasi') border-red-500 @enderror"
+                                    placeholder="Gedung A, Lantai 3, Sayap Barat"
+                                >
+                            </div>
+                            @error('lokasi')
+                                <p class="mt-2 text-sm text-red-600 flex items-center">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i> {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <!-- Unit -->
+                        <div class="group">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-sitemap text-purple-600 mr-2"></i>
+                                Unit Kerja / Fakultas <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fas fa-university"></i>
+                                </div>
+                                <select 
+                                    name="unit_id" 
+                                    required
+                                    class="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all @error('unit_id') border-red-500 @enderror appearance-none bg-white"
+                                >
+                                    <option value="">-- Pilih Unit --</option>
+                                    @foreach ($units as $unit)
+                                        <option value="{{ $unit->id }}" {{ old('unit_id', $room->unit_id) == $unit->id ? 'selected' : '' }}>
+                                            {{ $unit->nama_unit }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-400"></i>
+                                </div>
+                            </div>
+                            @error('unit_id')
+                                <p class="mt-2 text-sm text-red-600 flex items-center">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i> {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <!-- Info Sistem -->
+                        <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
+                            <h3 class="font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="fas fa-info-circle text-blue-600 mr-2"></i> Informasi Sistem
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <span class="text-gray-500">Dibuat:</span>
+                                    <p class="font-medium text-gray-900">{{ $room->created_at->format('d M Y, H:i') }}</p>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500">Diperbarui:</span>
+                                    <p class="font-medium text-gray-900">{{ $room->updated_at->diffForHumans() }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                            <button 
+                                type="submit"
+                                class="flex-1 sm:flex-initial inline-flex justify-center items-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-700 text-white font-bold rounded-xl hover:from-indigo-700 hover:to-purple-800 focus:ring-4 focus:ring-indigo-300 transform hover:-translate-y-1 transition-all duration-200 shadow-xl"
+                            >
+                                <i class="fas fa-save mr-3"></i>
+                                Simpan Perubahan
+                            </button>
+                            <a href="{{ route('rooms.show', $room->id) }}" 
+                               class="flex-1 sm:flex-initial inline-flex justify-center items-center px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50 focus:ring-4 focus:ring-gray-200 transition">
+                                <i class="fas fa-times mr-3"></i>
+                                Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tips Box -->
+            <div class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6">
+                <div class="flex">
+                    <div class="bg-blue-200 p-3 rounded-xl mr-5">
+                        <i class="fas fa-lightbulb text-blue-700 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-blue-900 mb-2">Tips Pengisian</h3>
+                        <ul class="text-sm text-blue-800 space-y-1">
+                            <li class="flex items-center"><i class="fas fa-check text-green-600 mr-2"></i> Gunakan nama ruangan yang unik</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-600 mr-2"></i> Lokasi membantu pencarian cepat</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-600 mr-2"></i> Pilih unit yang benar untuk laporan</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white/80 backdrop-blur-sm border-t border-gray-200 py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 text-center text-xs text-gray-500">
+            Form Edit • ID: <span class="font-mono">#{{ str_pad($room->id, 6, '0', STR_PAD_LEFT) }}</span> • 
+            {{ now()->format('d M Y, H:i') }} WIB
+        </div>
+    </footer>
+</div>
+
+<!-- Alpine.js untuk interaktivitas -->
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('form', () => ({
+            init() {
+                // Auto-focus nama ruangan
+                this.$refs.nama?.focus();
+            }
+        }));
+    });
+</script>
+
+<!-- Custom CSS -->
+<style>
+    .group:focus-within .border-gray-200 {
+        @apply border-indigo-500 ring-4 ring-indigo-100;
+    }
+    input, select {
+        transition: all 0.2s ease;
+    }
+</style>
+</body>
+</html>
 @endsection

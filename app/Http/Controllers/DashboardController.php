@@ -40,4 +40,9 @@ class DashboardController extends Controller
             'recentTransactions'
         ));
     }
+
+    public function settingsIndex()
+    {
+        return view('settings.index');
+    }
 }

@@ -27,12 +27,11 @@ class InventarisController extends Controller // Changed class name
         // Logika untuk mengelompokkan inventaris berdasarkan nama_barang
         $query = Inventaris::select(
             'nama_barang',
+            DB::raw('MAX(lokasi) as lokasi'), // Tambahkan lokasi ke query
+            DB::raw('MAX(kode_inventaris) as kode_inventaris'), // Tambahkan kode_inventaris ke query
             DB::raw('SUM(kondisi_baik) as total_baik'),
             DB::raw('SUM(kondisi_rusak_ringan) as total_rusak_ringan'),
             DB::raw('SUM(kondisi_rusak_berat) as total_rusak_berat'),
-            // Ambil data lokasi dan keterangan dari salah satu item sebagai perwakilan
-            DB::raw('MAX(keterangan) as keterangan'),
-            DB::raw('MAX(room_id) as room_id')
         )->groupBy('nama_barang');
 
         if ($request->has('search')) {
@@ -50,12 +49,8 @@ class InventarisController extends Controller // Changed class name
     public function create()
     {
         $this->authorize('create', Inventaris::class); // Otorisasi create
-        // Ambil semua data unit dan ruangan
-        $units = \App\Models\Unit::all();
-        $rooms = \App\Models\Room::all();
-
-        // Kirim data ke view
-        return view('inventaris.create', compact('units', 'rooms'));
+        
+        return view('inventaris.create');
     }
 
     /**
@@ -75,17 +70,11 @@ class InventarisController extends Controller // Changed class name
             $inventaris = Inventaris::create([
                 'nama_barang' => $validatedData['nama_barang'],
                 'kategori' => $validatedData['kategori'],
-                'pemilik' => $validatedData['pemilik'],
-                'sumber_dana' => $validatedData['sumber_dana'],
-                'tahun_beli' => $validatedData['tahun_beli'],
-                'nomor_unit' => $validatedData['nomor_unit'],
+                'lokasi' => $validatedData['lokasi'] ?? null, // Tambahkan lokasi
+                'kode_inventaris' => $validatedData['kode_inventaris'] ?? null, // Tambahkan kode_inventaris
                 'kondisi_baik' => $validatedData['kondisi_baik'],
                 'kondisi_rusak_ringan' => $validatedData['kondisi_rusak_ringan'],
                 'kondisi_rusak_berat' => $validatedData['kondisi_rusak_berat'],
-                'keterangan' => $validatedData['keterangan'],
-                'lokasi' => $validatedData['lokasi'],
-                'unit_id' => $validatedData['unit_id'],
-                'room_id' => $validatedData['room_id'],
             ]);
 
             // 4. Jika barang habis pakai, buat entri stok
@@ -127,8 +116,7 @@ class InventarisController extends Controller // Changed class name
     public function show(Inventaris $inventaris) // Ganti $inventari jadi $inventaris
     {
         $this->authorize('view', $inventaris); // Otorisasi view spesifik
-        // Load relasi jika diperlukan
-        $inventaris->load(['room', 'unit']);
+        // Lokasi dan kode_inventaris sudah ada di model, tidak perlu load relasi
         return view('inventaris.show', compact('inventaris'));
     }
 
@@ -138,9 +126,8 @@ class InventarisController extends Controller // Changed class name
     public function edit(Inventaris $inventaris) // Ganti $inventari jadi $inventaris
     {
         $this->authorize('update', $inventaris); // Otorisasi update
-        $units = Unit::all();
-        $rooms = Room::all();
-        return view('inventaris.edit', compact('inventaris', 'units', 'rooms'));
+        // Lokasi dan kode_inventaris sudah ada di model
+        return view('inventaris.edit', compact('inventaris'));
     }
 
     /**
@@ -184,7 +171,7 @@ class InventarisController extends Controller // Changed class name
     public function printAll()
     {
         $this->authorize('print', Inventaris::class); // Otorisasi print
-        $inventaris = Inventaris::with(['room', 'unit'])->get();
+        $inventaris = Inventaris::all(); // Lokasi dan kode_inventaris sudah ada di model
          // Tambah eager load stok untuk habis pakai
          $inventaris->load(['stokHabisPakai' => function ($query) {
              $query->select('inventaris_id', DB::raw('SUM(jumlah_masuk) as total_masuk, SUM(jumlah_keluar) as total_keluar'))
@@ -195,7 +182,7 @@ class InventarisController extends Controller // Changed class name
 
     public function printSingle($id)
     {
-        $inventaris = Inventaris::with(['room', 'unit', 'stokHabisPakai'])->findOrFail($id);
+        $inventaris = Inventaris::with(['stokHabisPakai'])->findOrFail($id); // Lokasi dan kode_inventaris sudah ada di model
         $this->authorize('print', $inventaris); // Otorisasi print
         return view('inventaris.print_single', compact('inventaris'));
     }
@@ -223,8 +210,7 @@ class InventarisController extends Controller // Changed class name
     public function showGrouped($nama_barang)
     {
          $this->authorize('viewAny', Inventaris::class); // Asumsi sama dengan viewAny
-         $inventarisDetails = Inventaris::with(['room', 'unit'])
-             ->where('nama_barang', $nama_barang)
+         $inventarisDetails = Inventaris::where('nama_barang', $nama_barang)
              ->paginate(10);
          $namaBarang = $nama_barang;
          return view('inventaris.show_grouped', compact('inventarisDetails', 'namaBarang'));

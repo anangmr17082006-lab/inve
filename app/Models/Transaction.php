@@ -15,6 +15,12 @@ class Transaction extends Model
         'keterangan',
     ];
 
+    protected $casts = [
+        'tanggal' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     public function inventaris()
     {
         return $this->belongsTo(Inventaris::class);

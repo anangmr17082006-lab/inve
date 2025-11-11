@@ -27,17 +27,11 @@ class StoreInventarisRequest extends FormRequest
         return [
             'nama_barang' => 'required|string|max:255',
             'kategori' => 'required|string|in:tidak_habis_pakai,habis_pakai,aset_tetap',
-            'pemilik' => 'required|string|max:255',
-            'sumber_dana' => 'required|string|max:255',
-            'tahun_beli' => 'required|date',
-            'nomor_unit' => 'required|integer|min:1',
+            'lokasi' => 'nullable|string|max:255', // Tambahkan validasi untuk lokasi
+            'kode_inventaris' => 'nullable|string|max:255|unique:inventaris,kode_inventaris', // Tambahkan validasi untuk kode_inventaris
             'kondisi_baik' => 'required|integer|min:0',
             'kondisi_rusak_ringan' => 'required|integer|min:0',
             'kondisi_rusak_berat' => 'required|integer|min:0',
-            'keterangan' => 'nullable|string',
-            'lokasi' => 'nullable|string',
-            'unit_id' => 'required|exists:units,id',
-            'room_id' => 'required|exists:rooms,id',
             'initial_stok' => 'nullable|integer|min:0|required_if:kategori,habis_pakai',
         ];
     }

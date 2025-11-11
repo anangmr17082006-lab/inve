@@ -1,59 +1,90 @@
 @extends('dashboard')
 
 @section('content')
-    <div class="max-w-7xl mx-auto">
-        <h1 class="text-3xl font-bold leading-tight text-gray-900 mb-8">Detail Transaksi Inventaris: {{ $transaction->id }}</h1>
+<div class="max-w-4xl mx-auto space-y-6">
+    {{-- Breadcrumb --}}
+    <x-breadcrumb :links="[
+        ['url' => route('dashboard'), 'label' => 'Dashboard'],
+        ['url' => route('transactions.index'), 'label' => 'Transaksi Inventaris'],
+    ]" current="#{{ $transaction->id }}" />
 
-        <div class="bg-white shadow-md rounded-lg p-6">
-            <div class="mb-4">
-                <p class="text-gray-700 text-sm font-bold">ID Transaksi:</p>
-                <p class="text-gray-900">{{ $transaction->id }}</p>
+    {{-- Header Card --}}
+    <x-card>
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-900">Detail Transaksi Inventaris</h1>
+                <p class="text-sm text-gray-500 mt-1">ID: #{{ $transaction->id }}</p>
             </div>
-            <div class="mb-4">
-                <p class="text-gray-700 text-sm font-bold">Inventaris:</p>
-                <p class="text-gray-900">{{ $transaction->item->nama_barang ?? 'N/A' }} ({{ $transaction->item->kode_inventaris ?? 'N/A' }}) - {{ $transaction->item->kategori ?? 'N/A' }}</p>
-            </div>
-            <div class="mb-4">
-                <p class="text-gray-700 text-sm font-bold">Jenis Transaksi:</p>
-                <p class="text-gray-900">{{ $transaction->jenis }}</p>
-            </div>
-            <div class="mb-4">
-                <p class="text-gray-700 text-sm font-bold">Jumlah:</p>
-                <p class="text-gray-900">{{ $transaction->jumlah }}</p>
-            </div>
-            <div class="mb-4">
-                <p class="text-gray-700 text-sm font-bold">Tanggal:</p>
-                <p class="text-gray-900">{{ $transaction->tanggal }}</p>
-            </div>
-            <div class="mb-4">
-                <p class="text-gray-700 text-sm font-bold">Pengguna:</p>
-                <p class="text-gray-900">{{ $transaction->user->name ?? 'N/A' }}</p>
-            </div>
-            <div class="mb-4">
-                <p class="text-gray-700 text-sm font-bold">Keterangan:</p>
-                <p class="text-gray-900">{{ $transaction->keterangan ?? 'N/A' }}</p>
-            </div>
-            <div class="mb-4">
-                <p class="text-gray-700 text-sm font-bold">Dibuat Pada:</p>
-                <p class="text-gray-900">{{ $transaction->created_at }}</p>
-            </div>
-            <div class="mb-4">
-                <p class="text-gray-700 text-sm font-bold">Terakhir Diperbarui Pada:</p>
-                <p class="text-gray-900">{{ $transaction->updated_at }}</p>
-            </div>
+            {{-- Status Badge --}}
+            <span @class([
+                'px-3 py-1 text-sm font-medium rounded-full',
+                'bg-green-100 text-green-800' => $transaction->jenis === 'masuk',
+                'bg-red-100 text-red-800' => $transaction->jenis === 'keluar',
+            ])>
+                {{ ucfirst($transaction->jenis) }}
+            </span>
+        </div>
+    </x-card>
 
-            <div class="flex items-center justify-between mt-6">
-                <form action="{{ route('transactions.destroy', $transaction->id) }}" method="POST" class="inline-block">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" onclick="return confirm('Apakah Anda yakin ingin menghapus transaksi ini?')">
-                        Hapus Transaksi
-                    </button>
-                </form>
-                <a href="{{ route('transactions.index') }}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
-                    Kembali ke Daftar Transaksi
-                </a>
+    {{-- Detail Card --}}
+    <x-card title="Informasi Transaksi" icon="heroicon-o-information-circle">
+        <dl class="divide-y divide-gray-100">
+            @php
+                $details = [
+                    ['label' => 'Inventaris', 'value' => $transaction->item->nama_barang, 'subtext' => $transaction->item->kode_inventaris . ' · ' . $transaction->item->kategori],
+                    ['label' => 'Jumlah', 'value' => $transaction->jumlah . ' unit', 'icon' => 'heroicon-o-archive-box'],
+                    ['label' => 'Tanggal', 'value' => \Carbon\Carbon::parse($transaction->tanggal)->isoFormat('dddd, D MMMM Y'), 'subtext' => \Carbon\Carbon::parse($transaction->tanggal)->diffForHumans()],
+                    ['label' => 'Pengguna', 'value' => $transaction->user?->name ?? 'N/A', 'icon' => 'heroicon-o-user'],
+                    ['label' => 'Keterangan', 'value' => $transaction->keterangan ?? '-', 'fullWidth' => true],
+                    ['label' => 'Dibuat', 'value' => $transaction->created_at->diffForHumans(), 'subtext' => $transaction->created_at->format('d/m/Y H:i:s')],
+                    ['label' => 'Diperbarui', 'value' => $transaction->updated_at->diffForHumans(), 'subtext' => $transaction->updated_at->format('d/m/Y H:i:s')],
+                ];
+            @endphp
+
+            @foreach($details as $detail)
+                <x-detail-row :label="$detail['label']" :value="$detail['value']" 
+                              :subtext="$detail['subtext'] ?? null" 
+                              :icon="$detail['icon'] ?? null" 
+                              :fullWidth="$detail['fullWidth'] ?? false" />
+            @endforeach
+        </dl>
+    </x-card>
+
+    {{-- Action Buttons --}}
+    <div class="flex items-center justify-between">
+        {{-- Delete with Modal --}}
+        <div x-data="{ open: false }">
+            <x-button @click="open = true" variant="danger" icon="heroicon-o-trash">
+                Hapus Transaksi
+            </x-button>
+
+            {{-- Modal Confirm --}}
+            <div x-show="open" x-transition class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
+                <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="flex-shrink-0">
+                            <x-heroicon-o-exclamation-triangle class="w-8 h-8 text-red-600" />
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900">Konfirmasi Hapus</h3>
+                            <p class="text-sm text-gray-500">Data akan dihapus permanent</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-6">Apakah Anda yakin ingin menghapus transaksi <strong>#{{ $transaction->id }}</strong>?</p>
+                    <div class="flex justify-end gap-3">
+                        <x-button @click="open = false" variant="secondary">Batal</x-button>
+                        <form action="{{ route('transactions.destroy', $transaction) }}" method="POST" class="inline">
+                            @csrf @method('DELETE')
+                            <x-button type="submit" variant="danger">Ya, Hapus</x-button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <x-button href="{{ route('transactions.index') }}" variant="secondary" icon="heroicon-o-arrow-left">
+            Kembali
+        </x-button>
     </div>
+</div>
 @endsection

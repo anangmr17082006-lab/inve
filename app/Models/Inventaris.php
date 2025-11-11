@@ -9,10 +9,10 @@ use App\Models\Room;
 use App\Models\Unit;
 use App\Models\Transaction;
 use App\Models\Request as ItemRequest; // Alias Request model to avoid conflict
-use App\Observers\InventarisObserver; // Menggunakan Observer
-use Illuminate\Database\Eloquent\Attributes\Observed;
+// use App\Observers\InventarisObserver; // Menggunakan Observer
+// use Illuminate\Database\Eloquent\Attributes\Observed;
 
-#[Observed(InventarisObserver::class)] // Mendaftarkan Observer
+// #[Observed(InventarisObserver::class)] // Mendaftarkan Observer
 class Inventaris extends Model
 {
     use HasFactory;
@@ -27,18 +27,11 @@ class Inventaris extends Model
     protected $fillable = [
         'nama_barang',
         'kategori',
-        'pemilik',
-        'sumber_dana',
-        'tahun_beli',
-        'nomor_unit',
+        'lokasi', // Tambahkan kembali lokasi
+        'kode_inventaris', // Tambahkan kembali kode_inventaris
         'kondisi_baik',
         'kondisi_rusak_ringan',
         'kondisi_rusak_berat',
-        'keterangan',
-        'lokasi',
-        'unit_id',
-        'room_id',
-        'kode_inventaris', // Meskipun di-generate Observer, tambahkan di sini
     ];
 
     // Relationships
@@ -48,15 +41,15 @@ class Inventaris extends Model
         return $this->hasMany(StokHabisPakai::class, 'inventaris_id', 'id');
     }
 
-    public function room()
-    {
-        return $this->belongsTo(Room::class);
-    }
+    // public function room()
+    // {
+    //     return $this->belongsTo(Room::class);
+    // }
 
-    public function unit()
-    {
-        return $this->belongsTo(Unit::class);
-    }
+    // public function unit()
+    // {
+    //     return $this->belongsTo(Unit::class);
+    // }
 
     public function transactions()
     {

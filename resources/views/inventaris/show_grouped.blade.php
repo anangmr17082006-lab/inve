@@ -121,8 +121,9 @@
                             <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">No</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Kode Inventaris</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Lokasi</th>
-                            <th scope="col" class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">Kondisi</th>
-                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Keterangan</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Kondisi Baik</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Kondisi Rusak Ringan</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Kondisi Rusak Berat</th>
                             <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                                 <span class="sr-only">Aksi</span>
                             </th>
@@ -136,7 +137,7 @@
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm">
                                     <div class="font-mono font-medium text-gray-900 bg-gray-50 px-2 py-1 rounded border text-xs inline-block">
-                                        {{ $item->kode_inventaris }}
+                                        {{ $item->kode_inventaris ?? 'N/A' }}
                                     </div>
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
@@ -144,39 +145,22 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                         </svg>
-                                        {{ $item->room->nama_ruangan ?? 'N/A' }}
+                                        {{ $item->lokasi ?? 'N/A' }}
                                     </div>
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm">
-                                    <div class="flex flex-col gap-1">
-                                        @if($item->kondisi_baik > 0)
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 w-fit">
-                                                <span class="h-1.5 w-1.5 rounded-full bg-green-400 mr-1"></span>
-                                                Baik: {{ $item->kondisi_baik }}
-                                            </span>
-                                        @endif
-                                        @if($item->kondisi_rusak_ringan > 0)
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 w-fit">
-                                                <span class="h-1.5 w-1.5 rounded-full bg-yellow-400 mr-1"></span>
-                                                Ringan: {{ $item->kondisi_rusak_ringan }}
-                                            </span>
-                                        @endif
-                                        @if($item->kondisi_rusak_berat > 0)
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 w-fit">
-                                                <span class="h-1.5 w-1.5 rounded-full bg-red-400 mr-1"></span>
-                                                Berat: {{ $item->kondisi_rusak_berat }}
-                                            </span>
-                                        @endif
-                                        @if($item->kondisi_baik == 0 && $item->kondisi_rusak_ringan == 0 && $item->kondisi_rusak_berat == 0)
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                                Tidak Ada Data
-                                            </span>
-                                        @endif
+                                    <div class="font-mono font-medium text-gray-900 bg-gray-50 px-2 py-1 rounded border text-xs inline-block">
+                                        {{ $item->kondisi_baik }}
                                     </div>
                                 </td>
-                                <td class="px-3 py-4 text-sm text-gray-500 max-w-xs">
-                                    <div class="truncate" title="{{ $item->keterangan }}">
-                                        {{ $item->keterangan ?: '-' }}
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                                    <div class="font-mono font-medium text-gray-900 bg-gray-50 px-2 py-1 rounded border text-xs inline-block">
+                                        {{ $item->kondisi_rusak_ringan }}
+                                    </div>
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm">
+                                    <div class="font-mono font-medium text-gray-900 bg-gray-50 px-2 py-1 rounded border text-xs inline-block">
+                                        {{ $item->kondisi_rusak_berat }}
                                     </div>
                                 </td>
                                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
@@ -206,7 +190,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="whitespace-nowrap px-3 py-8 text-sm text-center text-gray-500">
+                                <td colspan="7" class="whitespace-nowrap px-3 py-8 text-sm text-center text-gray-500">
                                     <div class="flex flex-col items-center justify-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m8-8V4a1 1 0 00-1-1h-2a1 1 0 00-1 1v1M9 7h6" />
