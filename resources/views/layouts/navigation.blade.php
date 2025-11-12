@@ -1,4 +1,4 @@
-<nav x-data="{ open: false, userMenuOpen: false }" class="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50">
+<nav x-data="{ userMenuOpen: false }" class="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -206,20 +206,12 @@
                 </div>
             </div>
 
-            <!-- Hamburger Menu (Mobile) -->
-            <div class="flex items-center lg:hidden">
-                <button @click="open = ! open" class="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                    <svg class="w-6 h-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
             </div>
         </div>
     </div>
 
     <!-- Mobile Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="lg:hidden border-t border-gray-200 bg-white">
+    <div class="lg:hidden border-t border-gray-200 bg-white block">
         <div class="px-4 py-3 space-y-1">
             <!-- Mobile Navigation Links -->
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="flex items-center space-x-3 px-3 py-3 rounded-lg">
