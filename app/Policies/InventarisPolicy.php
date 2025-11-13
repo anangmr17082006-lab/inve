@@ -52,7 +52,7 @@ class InventarisPolicy
      */
     public function delete(User $user, Inventaris $inventaris): bool
     {
-        return $user->role === 'admin';
+        return true; // Semua user yang terautentikasi bisa menghapus
     }
 
     /**
