@@ -194,22 +194,43 @@ class InventarisController extends Controller
     /**
      * Remove the specified resource from storage.
      * FUNGSI: Hapus MASTER BARANG (dan semua unitnya via cascade)
+     * [PERBAIKAN]: Menambahkan Try-Catch dan DB Transaction
      */
     public function destroy(Inventaris $inventaris)
     {
         $this->authorize('delete', $inventaris);
         
-        // Logika hapus stok/aset detail
-        // Jika 'habis_pakai', hapus stok
-        if ($inventaris->kategori === 'habis_pakai') {
-            $inventaris->stokHabisPakai()->delete();
+        // Mulai database transaction
+        DB::beginTransaction();
+
+        try {
+            // Logika hapus stok/aset detail
+            // Jika 'habis_pakai', hapus stok
+            if ($inventaris->kategori === 'habis_pakai') {
+                $inventaris->stokHabisPakai()->delete();
+            }
+            // Jika 'tidak_habis_pakai', aset_details akan terhapus otomatis
+            // berkat onDelete('cascade') di migrasi
+            
+            // Hapus data master
+            $inventaris->delete();
+
+            // Jika semua berhasil, commit
+            DB::commit();
+            
+            return redirect()->route('inventaris.index')->with('success', 'Master barang (dan semua unitnya) berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            // Jika terjadi error, batalkan semua
+            DB::rollBack();
+            
+            // Catat errornya untuk debugging
+            Log::error('Gagal menghapus inventaris: ' . $e->getMessage());
+
+            // Beri pesan error yang jelas ke pengguna
+            return redirect()->route('inventaris.index')
+                             ->with('error', 'Gagal menghapus data. Kemungkinan data ini masih terhubung dengan data lain (misal: transaksi atau permintaan).');
         }
-        // Jika 'tidak_habis_pakai', aset_details akan terhapus otomatis
-        // berkat onDelete('cascade') di migrasi
-        
-        $inventaris->delete();
-        
-        return redirect()->route('inventaris.index')->with('success', 'Master barang (dan semua unitnya) berhasil dihapus.');
     }
 
     // ====================================================================
