@@ -39,7 +39,7 @@ Route::middleware("auth")->group(function () {
     // Resource Routes
     Route::resource("inventaris", InventarisController::class)->parameters([
         'inventaris' => 'inventaris'
-    ]);
+    ])->where('inventaris', '[0-9]+');
     Route::resource("acquisitions", AcquisitionController::class);
     Route::resource("rooms", RoomController::class);
     Route::resource("stok", StokHabisPakaiController::class);

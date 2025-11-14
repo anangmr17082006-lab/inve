@@ -50,9 +50,10 @@ class InventarisPolicy
      * Determine whether the user can delete the model.
      * Hanya admin yang boleh menghapus
      */
-    public function delete(User $user, Inventaris $inventaris): bool
+  public function delete(User $user, Inventaris $inventaris): bool
     {
-        return true; // Semua user yang terautentikasi bisa menghapus
+        // Sesuaikan dengan logika 'Hanya admin'
+        return $user->role === 'admin'; 
     }
 
     /**

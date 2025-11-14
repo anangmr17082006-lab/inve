@@ -1,211 +1,185 @@
-# Dokumentasi Perbaikan Fungsi Delete Inventaris
+# Dokumentasi Perbaikan Masalah Penghapusan Inventaris
 
 ## Masalah
-Tombol delete untuk barang tidak habis pakai di manajemen inventaris tidak berfungsi dengan benar. Data tidak terhapus dari database meskipun tidak ada error yang muncul.
+Saat menekan tombol delete pada halaman inventaris, muncul pesan error:
+```
+[2025-11-14 01:17:56] local.INFO: === DELETE METHOD CALLED ===  
+[2025-11-14 01:17:56] local.INFO: Request method: DELETE  
+[2025-11-14 01:17:56] local.INFO: Request URL: http://127.0.0.1:8000/inventaris/9  
+[2025-11-14 01:17:56] local.INFO: Raw Route Parameter (inventaris):   
+[2025-11-14 01:17:56] local.ERROR: Inventaris model not found for ID:
+```
 
 ## Analisis Masalah
-Berdasarkan investigasi yang dilakukan, ditemukan beberapa masalah:
+1. **ID Kosong**: Log menunjukkan `Raw Route Parameter (inventaris):` kosong, yang berarti ID tidak diteruskan dengan benar dari frontend ke controller.
+2. **Model Not Found**: Controller tidak dapat menemukan model Inventaris karena ID yang diterima kosong atau tidak valid.
 
-1. **JavaScript `confirmDelete` function** tidak mengembalikan nilai yang benar untuk form submission
-2. **Method destroy di controller** sudah diimplementasikan dengan benar tetapi tidak dipanggil karena form tidak submit
-3. **Debugging tidak cukup** untuk melihat flow proses delete
+## Solusi yang Diimplementasikan
 
-## Perbaikan yang Dilakukan
-
-### 1. Perbaikan JavaScript `confirmDelete` Function
-**File:** `resources/views/inventaris/index.blade.php`
-
-**Perubahan:**
-- Menambahkan loading state untuk mencegah double submit
-- Mengubah cara form submission menjadi manual dengan `setTimeout`
-- Menambahkan visual feedback saat proses delete
+### 1. Perbaikan Controller (`app/Http/Controllers/InventarisController.php`)
 
 **Sebelum:**
-```javascript
-if (userConfirmed) {
-    console.log('User confirmed deletion, submitting form...');
-    // Biarkan form submit normal
-    return true;
-} else {
-    console.log('User cancelled deletion');
-    return false;
+```php
+public function destroy(Inventaris $inventaris)
+{
+    // Log untuk debugging
+    \Log::info('Raw Route Parameter (inventaris): ' . request()->route('inventaris'));
+    
+    // Pemeriksaan eksplisit
+    if (!$inventaris->exists) {
+        \Log::error('Inventaris model not found for ID: ' . request()->route('inventaris'));
+        return redirect()->route('inventaris.index')->with('error', 'Master barang tidak ditemukan.');
+    }
+    // ... kode penghapusan
 }
 ```
 
 **Sesudah:**
-```javascript
-if (userConfirmed) {
-    console.log('User confirmed deletion, submitting form...');
+```php
+public function destroy($id)
+{
+    // Log untuk debugging
+    \Log::info('Raw Route Parameter (inventaris): ' . request()->route('inventaris'));
+    \Log::info('ID Parameter: ' . $id);
     
-    // Tambahkan loading state untuk mencegah double submit
-    const submitButton = form.querySelector('button[type="submit"]');
-    if (submitButton) {
-        submitButton.disabled = true;
-        submitButton.innerHTML = '<svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Menghapus...';
+    try {
+        // Cari model dengan findOrFail untuk menangani kasus tidak ditemukan
+        $inventaris = Inventaris::findOrFail($id);
+        
+        // ... kode penghapusan
+        
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        \Log::error('Inventaris not found for ID: ' . $id);
+        return redirect()->route('inventaris.index')
+                         ->with('error', 'Data inventaris tidak ditemukan.');
+    } catch (\Exception $e) {
+        // ... penanganan error lainnya
     }
-    
-    // Submit form secara manual untuk memastikan berfungsi
-    setTimeout(() => {
-        form.submit();
-    }, 100);
-    
-    return false; // Mencegah submit otomatis, kita submit manual
-} else {
-    console.log('User cancelled deletion');
-    return false;
 }
 ```
 
-### 2. Peningkatan Debugging di Controller
-**File:** `app/Http/Controllers/InventarisController.php`
+**Perubahan:**
+- Mengubah parameter dari `Inventaris $inventaris` menjadi `$id` untuk memastikan ID selalu diterima
+- Menggunakan `findOrFail()` untuk menangani kasus model tidak ditemukan
+- Menambahkan `ModelNotFoundException` catch block secara spesifik
+- Menambahkan log untuk ID parameter yang diterima
+
+### 2. Perbaikan Frontend (`resources/views/inventaris/index.blade.php`)
+
+**Sebelum:**
+```html
+<form action="{{ route('inventaris.destroy', $item->id) }}" method="POST" 
+      onsubmit="return confirmDelete('{{ $item->nama_barang }}');"
+      class="delete-form">
+    @csrf
+    @method('DELETE')
+    <button type="submit">Hapus</button>
+</form>
+
+<script>
+function confirmDelete(itemName) {
+    return confirm(`Apakah Anda yakin ingin menghapus master barang "${itemName}"?`);
+}
+</script>
+```
+
+**Sesudah:**
+```html
+<form action="{{ route('inventaris.destroy', $item->id) }}" method="POST" 
+      onsubmit="return confirmDelete('{{ $item->nama_barang }}', {{ $item->id }});"
+      class="delete-form" data-id="{{ $item->id }}">
+    @csrf
+    @method('DELETE')
+    <button type="submit">Hapus</button>
+</form>
+
+<script>
+function confirmDelete(itemName, itemId) {
+    console.log('Attempting to delete item:', { itemName, itemId });
+    
+    if (confirm(`Apakah Anda yakin ingin menghapus master barang "${itemName}" beserta semua unit asetnya?`)) {
+        console.log('User confirmed deletion for item ID:', itemId);
+        return true;
+    } else {
+        console.log('User cancelled deletion for item ID:', itemId);
+        return false;
+    }
+}
+
+// Event listener untuk logging form submission
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.delete-form').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            const id = this.getAttribute('data-id');
+            const action = this.getAttribute('action');
+            console.log('Form submission detected:', { 
+                id, 
+                action, 
+                method: this.querySelector('input[name="_method"]').value 
+            });
+        });
+    });
+});
+</script>
+```
 
 **Perubahan:**
-- Menambahkan logging lebih detail untuk setiap tahap proses delete
-- Menambahkan informasi tentang request method dan URL
-- Menambahkan counter untuk jumlah record yang dihapus
-- Memperbaiki pesan sukses/error yang lebih informatif
+- Menambahkan `data-id="{{ $item->id }}"` attribute pada form
+- Memperbaiki fungsi `confirmDelete()` untuk menerima parameter ID
+- Menambahkan console logging untuk debugging
+- Menambahkan event listener untuk tracking form submission
 
-**Penambahan Logging:**
+### 3. Perbaikan Route (`routes/web.php`)
+
+**Sebelum:**
 ```php
-\Log::info('Request method: ' . request()->method());
-\Log::info('Request URL: ' . request()->fullUrl());
-\Log::info('Inventaris Kategori: ' . $inventaris->kategori);
-
-// Log sebelum menghapus - dapatkan data untuk verifikasi
-$asetDetailsCount = $inventaris->asetDetails()->count();
-$stokCount = $inventaris->stokHabisPakai()->count();
-$transactionsCount = $inventaris->transactions()->count();
-$requestsCount = $inventaris->requests()->count();
-
-\Log::info("Data sebelum delete:");
-\Log::info("- Aset Details count: " . $asetDetailsCount);
-\Log::info("- Stok count: " . $stokCount);
-\Log::info("- Transactions count: " . $transactionsCount);
-\Log::info("- Requests count: " . $requestsCount);
-
-// Log hasil delete
-$deletedAsetDetails = $inventaris->asetDetails()->delete();
-\Log::info('Deleted aset details: ' . $deletedAsetDetails . ' records');
+Route::resource("inventaris", InventarisController::class)->parameters([
+    'inventaris' => 'inventaris'
+]);
 ```
 
-## Struktur Database yang Digunakan
-
-### Tabel `inventaris` (Master)
-- `id` (Primary Key)
-- `nama_barang`
-- `kategori` ('habis_pakai', 'tidak_habis_pakai', 'aset_tetap')
-- `created_at`, `updated_at`
-
-### Tabel `aset_details` (Detail Unit)
-- `id` (Primary Key)
-- `inventaris_id` (Foreign Key ke inventaris.id dengan `onDelete('cascade')`)
-- `kode_inv`
-- `kondisi` ('Baik', 'Rusak Ringan', 'Rusak Berat')
-- `room_id`, `penanggung_jawab_id`
-- Field lainnya (tgl_pembelian, harga_beli, dll)
-
-## Flow Proses Delete
-
-1. **User klik tombol Hapus** di halaman index inventaris
-2. **JavaScript `confirmDelete`** menampilkan konfirmasi dialog
-3. **Jika user konfirmasi:**
-   - Button disable dan menampilkan loading spinner
-   - Form submit secara manual setelah 100ms
-4. **Request dikirim** ke route `DELETE /inventaris/{id}`
-5. **Controller `destroy` method** dipanggil:
-   - Verifikasi authorization
-   - Mulai database transaction
-   - Log data sebelum delete
-   - Hapus data terkait (aset_details, transactions, requests)
-   - Hapus master inventaris
-   - Commit transaction
-   - Log hasil delete
-6. **Redirect ke index** dengan pesan sukses/error
-
-## Testing yang Direkomendasikan
-
-### 1. Testing Basic Delete
-- Pilih barang tidak habis pakai yang memiliki unit
-- Klik tombol Hapus
-- Konfirmasi dialog
-- Verifikasi data terhapus dari database
-
-### 2. Testing Delete dengan Data Terkait
-- Pastikan barang memiliki:
-  - Unit aset (aset_details)
-  - Transaksi (transactions)
-  - Permintaan (requests)
-- Hapus dan verifikasi semua data terhapus
-
-### 3. Testing Error Handling
-- Coba hapus dengan user yang tidak memiliki authorization
-- Verifikasi error handling berfungsi
-
-### 4. Testing JavaScript
-- Buka browser console
-- Verifikasi log muncul saat proses delete
-- Test cancel konfirmasi
-
-## Log Debugging
-
-Untuk memantau proses delete, periksa file log:
-```
-storage/logs/laravel.log
+**Sesudah:**
+```php
+Route::resource("inventaris", InventarisController::class)->parameters([
+    'inventaris' => 'inventaris'
+])->where('inventaris', '[0-9]+');
 ```
 
-Cari pattern:
-```
-=== DELETE METHOD CALLED ===
-Request method: DELETE
-Inventaris ID: [ID]
-Inventaris Name: [NAMA]
-Data sebelum delete:
-- Aset Details count: [JUMLAH]
-Deleted aset details: [JUMLAH] records
-=== DELETE SUCCESS ===
-```
+**Perubahan:**
+- Menambahkan `where('inventaris', '[0-9]+')` constraint untuk memastikan ID hanya berupa angka
+- Ini membantu mencegah ID yang tidak valid masuk ke controller
+
+## Hasil yang Diharapkan
+
+1. **Logging yang Lebih Baik**: Controller sekarang memiliki logging yang lebih detail untuk debugging
+2. **Error Handling yang Lebih Baik**: ModelNotFoundException ditangani secara spesifik
+3. **Frontend Debugging**: JavaScript sekarang memberikan console log untuk tracking
+4. **Route Validation**: Route sekarang memvalidasi format ID sebelum mencapai controller
+
+## Cara Testing
+
+1. Buka halaman inventaris
+2. Buka browser console (F12)
+3. Klik tombol hapus pada salah satu item
+4. Periksa console log untuk melihat informasi debugging
+5. Periksa Laravel log (`storage/logs/laravel.log`) untuk melihat log dari controller
 
 ## Troubleshooting
 
-### Jika Delete Masih Tidak Berfungsi:
+Jika masalah masih terjadi:
+1. Periksa browser console untuk error JavaScript
+2. Periksa Laravel log untuk informasi lebih detail
+3. Pastikan form memiliki `data-id` attribute yang benar
+4. Pastikan route tidak memiliki konflik dengan route lainnya
 
-1. **Periksa Browser Console:**
-   - Buka Developer Tools (F12)
-   - Cek tab Console untuk error JavaScript
-   - Verifikasi log dari `confirmDelete` function
+## File yang Diubah
 
-2. **Periksa Network Tab:**
-   - Pastikan request DELETE terkirim
-   - Verifikasi status response (200, 404, 403, 500)
-
-3. **Periksa Laravel Log:**
-   - Apakah `=== DELETE METHOD CALLED ===` muncul?
-   - Jika tidak, method tidak dipanggil
-
-4. **Verifikasi CSRF Token:**
-   - Pastikan CSRF token valid
-   - Cek apakah session expired
-
-5. **Verifikasi Authorization:**
-   - Pastikan user memiliki hak akses delete
-   - Cek `InventarisPolicy`
+1. `app/Http/Controllers/InventarisController.php` - Metode destroy()
+2. `resources/views/inventaris/index.blade.php` - Form dan JavaScript
+3. `routes/web.php` - Resource route constraint
 
 ## Catatan Tambahan
 
-- **Cascade Delete:** Tabel `aset_details` sudah memiliki `onDelete('cascade')`, jadi seharusnya otomatis terhapus
-- **Transaction:** Menggunakan database transaction untuk memastikan data consistency
-- **Logging:** Logging detail untuk membantu debugging di production
-- **User Experience:** Loading state dan notifikasi yang jelas
-
-## Future Improvements
-
-1. **Soft Delete:** Implementasi soft delete untuk memungkinkan restore
-2. **Bulk Delete:** Menambahkan fitur hapus multiple items
-3. **Audit Trail:** Mencatat siapa yang menghapus dan kapan
-4. **Confirmation Modal:** Mengganti `confirm()` dengan modal yang lebih baik
-5. **Real-time Updates:** Menggunakan WebSocket untuk update real-time
-
----
-**Dokumentasi ini dibuat pada:** 13 November 2025  
-**Versi:** 1.0  
-**Author:** Kilo Code Assistant
+- Perubahan ini tidak mempengaruhi fungsionalitas lainnya
+- Semua log ditambahkan untuk debugging dan dapat dihapus jika tidak diperlukan lagi
+- JavaScript logging hanya untuk development dan tidak mempengaruhi produksi

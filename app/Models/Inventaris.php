@@ -8,6 +8,7 @@ use App\Models\StokHabisPakai;
 use App\Models\Room;
 use App\Models\Unit;
 use App\Models\Transaction;
+use App\Models\Acquisition;
 use App\Models\Request as ItemRequest; // Alias Request model to avoid conflict
 use App\Models\AsetDetail; // <-- TAMBAHKAN INI
 
@@ -55,6 +56,11 @@ class Inventaris extends Model
     {
         // Pastikan foreign key di tabel requests adalah 'inventaris_id'
         return $this->hasMany(ItemRequest::class, 'inventaris_id', 'id'); 
+    }
+    public function acquisitions()
+    {
+        // Pastikan foreign key di tabel acquisitions adalah 'inventaris_id'
+        return $this->hasMany(Acquisition::class, 'inventaris_id', 'id'); 
     }
 
     // Relasi public function unit() KITA HAPUS karena kolom unit_id sudah tidak ada

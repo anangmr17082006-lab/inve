@@ -194,20 +194,26 @@ class InventarisController extends Controller
     /**
      * Remove the specified resource from storage.
      * FUNGSI: Hapus MASTER BARANG (dan semua unitnya via cascade)
-     * [PERBAIKAN]: Menambahkan Try-Catch dan DB Transaction
+     * [PERBAIKAN]: Menambahkan Try-Catch dan DB Transaction dengan ModelNotFoundException
      */
-    public function destroy(Inventaris $inventaris)
+    public function destroy($id)
     {
         // Log untuk debugging - pastikan method ini dipanggil
         \Log::info('=== DELETE METHOD CALLED ===');
         \Log::info('Request method: ' . request()->method());
         \Log::info('Request URL: ' . request()->fullUrl());
-        \Log::info('Inventaris ID: ' . $inventaris->id);
-        \Log::info('Inventaris Name: ' . $inventaris->nama_barang);
-        \Log::info('Inventaris Kategori: ' . $inventaris->kategori);
-        \Log::info('User: ' . (auth()->user() ? auth()->user()->name : 'Guest'));
+        \Log::info('Raw Route Parameter (inventaris): ' . request()->route('inventaris'));
+        \Log::info('ID Parameter: ' . $id);
         
         try {
+            // Cari model dengan findOrFail untuk menangani kasus tidak ditemukan
+            $inventaris = Inventaris::findOrFail($id);
+            
+            \Log::info('Inventaris ID: ' . $inventaris->id);
+            \Log::info('Inventaris Name: ' . $inventaris->nama_barang);
+            \Log::info('Inventaris Kategori: ' . $inventaris->kategori);
+            \Log::info('User: ' . (auth()->user() ? auth()->user()->name : 'Guest'));
+            
             // Verifikasi authorization
             $this->authorize('delete', $inventaris);
             \Log::info('Authorization passed');
@@ -238,6 +244,9 @@ class InventarisController extends Controller
 
             // Hapus transaksi dan permintaan terkait secara eksplisit
             // Meskipun ada onDelete('cascade') di migrasi, ini untuk memastikan
+            $deletedAcquisitions = $inventaris->acquisitions()->delete(); // Pastikan relasinya ada di Model
+            \Log::info('Deleted acquisitions: ' . $deletedAcquisitions . ' records');
+
             $deletedTransactions = $inventaris->transactions()->delete();
             $deletedRequests = $inventaris->requests()->delete();
             \Log::info('Deleted transactions: ' . $deletedTransactions . ' records');
@@ -245,15 +254,25 @@ class InventarisController extends Controller
 
             // Hapus data master
             $deletedMaster = $inventaris->delete();
-            \Log::info('Deleted master inventaris: ' . ($deletedMaster ? 'SUCCESS' : 'FAILED'));
-
-            DB::commit();
-            \Log::info('Transaction committed');
-            \Log::info('=== DELETE SUCCESS ===');
             
-            return redirect()->route('inventaris.index')
-                            ->with('success', 'Master barang "' . $inventaris->nama_barang . '" (dan semua unitnya) berhasil dihapus.');
+            if ($deletedMaster) {
+                DB::commit();
+                \Log::info('Transaction committed');
+                \Log::info('=== DELETE SUCCESS ===');
+                return redirect()->route('inventaris.index')
+                                ->with('success', 'Master barang "' . $inventaris->nama_barang . '" (dan semua unitnya) berhasil dihapus.');
+            } else {
+                DB::rollBack();
+                \Log::error('Transaction rolled back: Master inventaris delete failed.');
+                \Log::error('DELETE FAILED: Master inventaris could not be deleted.');
+                return redirect()->route('inventaris.index')
+                                ->with('error', 'Gagal menghapus data: Master barang tidak dapat dihapus.');
+            }
 
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Log::error('Inventaris not found for ID: ' . $id);
+            return redirect()->route('inventaris.index')
+                             ->with('error', 'Data inventaris tidak ditemukan.');
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error('Transaction rolled back');
